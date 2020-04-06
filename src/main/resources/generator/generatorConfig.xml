@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <property name="useMapperCommentGenerator" value="false"/>
+
+        <!--生成service类-->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+        	<property name="baseMapper" value="me.djin.dcore.frame.common.CurdService"/>
+            <property name="targetProject" value="src/test/java"/>
+            <property name="targetPackage" value="test.service"/>
+            <property name="templatePath" value="generator/service.ftl"/>
+            <property name="mapperSuffix" value="Service"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>
+        </plugin>
+        <!--生成mapper接口-->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+        	<property name="baseMapper" value="me.djin.dcore.frame.common.CurdBaseDao"/>
+            <property name="targetProject" value="src/test/java"/>
+            <property name="targetPackage" value="test.dao"/>
+            <property name="templatePath" value="generator/dao.ftl"/>
+            <property name="mapperSuffix" value="Dao"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>
+        </plugin>
+        <!-- 生成Mapper.xml -->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+            <property name="targetProject" value="src/test/java"/>
+            <property name="targetPackage" value="test.dao.mappers"/>
+            <property name="templatePath" value="generator/mapperXml.ftl"/>
+            <property name="mapperPackage" value="test.dao"/>
+            <property name="mapperSuffix" value="Mapper"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.xml"/>
+        </plugin>
+        <!-- 生成Model -->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+		    <property name="targetProject" value="src/test/java"/>
+		    <property name="targetPackage" value="test.model"/>
+		    <property name="templatePath" value="generator/model.ftl"/>
+		    <property name="fileName" value="${tableClass.shortClassName}.java"/>
+		    <property name="mapperSuffix" value=""/>
+		</plugin>
+
+        <jdbcConnection driverClass="org.postgresql.Driver"
+                        connectionURL="jdbc:postgresql://localhost:5432/postgres"
+                        userId="postgres"
+                        password="123456">
+        </jdbcConnection>
+
+        <!--MyBatis 生成器只需要生成 Model-->
+        <javaModelGenerator targetPackage="test.model" targetProject="src/test/java"/>
+
+        <table tableName="tbname1" />
+        <table tableName="tbname2" />
+        <!-- <table tableName="%" /> -->
+    </context>
+</generatorConfiguration>

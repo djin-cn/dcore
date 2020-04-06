@@ -1,0 +1,75 @@
+<!-- scan 是否定期扫描xml文件， scanPeriod是说扫描周期是30秒 -->
+<configuration scan="true" scanPeriod="30 seconds" debug="false" packagingData="true">
+	<!-- 上下文名称，主要用于区分项目，不同项目不同的日志文件， -->
+	<!-- <property name="APP_NAME" value="app" /> -->
+	<!-- 属性 -->
+	<!-- <property name="USER_HOME" value="/data/logs/${APP_NAME}" /> -->
+	<property name="USER_HOME" value="/data/logs" />
+
+	<!-- appender很重要，一个配置文件会有多个appender -->
+	<!-- ConsoleApperder意思是从console中打印出来 -->
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<!-- 过滤器，一个appender可以有多个 -->
+		<!-- 阈值过滤，就是log行为级别过滤，debug及debug以上的信息会被打印出来 -->
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+
+		<!-- encoder编码规则 -->
+		<encoder>
+			<!--<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern> -->
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %logger logger名称 -[日志位置] %msg：日志消息，%n是换行符 -->
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - [%file:%line] - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<!-- 滚动日志文件，这个比较常用 -->
+	<appender name="ROLLINGFILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>true</prudent>
+		<!-- 日志日常打印文件当prudent等于true的时候file就不会起效果,但是会干扰下面的日志文件创建，同时将创建两个日志文件 -->
+		<!-- <file>${USER_HOME}/logFile.log</file> -->
+		<!-- 按天新建log日志 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${USER_HOME}/logFile.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+			<!-- 保留60天的历史日志 -->
+			<maxHistory>60</maxHistory>
+			<!-- 日志总保存量为30GB -->
+			<totalSizeCap>30GB</totalSizeCap>
+			<!-- 基于大小和时间，这个可以有，可以没有 -->
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<!-- 当一个日志大小大于MB，则换一个新的日志。日志名的%i从0开始，自动递增 -->
+				<maxFileSize>128MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread:%X{THREAD_ID}] %-5level %logger{50} - [%file:%line] - %msg%n</pattern>
+			<!-- 设置字符集 -->
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<!-- name意思是这个logger管的哪一片，像下面这个管的就是me.djin.study.frame包下的所有文件 level是只展示什么行为信息级别以上的，类似阈值过滤器 
+		additivity表示是否再抛出事件，就是说如果有一个logger的name是log，如果这个属性是true，另一个logger就会在这个logger处理完后接着继续处理 -->
+	<!-- <logger name="me.djin.dcore" level="INFO" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ROLLINGFILE" />
+	</logger> -->
+	<!-- mybatis 日志配置 -->
+	<logger name="com.apache.ibatis" level="TRACE" />
+	<logger name="java.sql.Connection" level="ERROR" />
+	<logger name="java.sql.Statement" level="INFO" />
+	<logger name="java.sql.PreparedStatement" level="INFO" />
+
+	<!-- 这就是上边logger没有管到的情况下 root默认接管所有logger -->
+	<root level="ERROR">
+		<!-- 连接输出源，也就是上边那几个输出源 ，你可以随便选几个appender -->
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ROLLINGFILE" />
+	</root>
+</configuration>
